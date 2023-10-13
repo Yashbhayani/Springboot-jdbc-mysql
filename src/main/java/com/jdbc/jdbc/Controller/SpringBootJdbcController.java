@@ -9,11 +9,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @ComponentScan(basePackages = "com.jdbc.jdbc.dao.Userdata")
@@ -66,6 +70,15 @@ public class SpringBootJdbcController {
         return new ResponseEntity<>(new FileResponse(FileName, "image Uploding"), HttpStatus.OK);
     }
 
+@GetMapping(value = "/images/{imageName}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+public ResponseEntity<byte[]> showImage(@PathVariable("imageName") String imageName) throws IOException {
+    InputStream resource = userdata.getResource(path, imageName);
+
+    byte[] imageData = StreamUtils.copyToByteArray(resource);
+
+    return new ResponseEntity<>(imageData, HttpStatus.OK);
+}
+
 
     @PostMapping("/img")
     public String img(@RequestParam("images") MultipartFile images){
@@ -79,12 +92,5 @@ public class SpringBootJdbcController {
         return FileName;
     }
 
-    @GetMapping(value = "/images/{imageName}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
-    public ResponseEntity<byte[]> showImage(@PathVariable("imageName") String imageName) throws IOException {
-        InputStream resource = userdata.getResource(path, imageName);
-    
-        byte[] imageData = StreamUtils.copyToByteArray(resource);
-    
-        return new ResponseEntity<>(imageData, HttpStatus.OK);
-    }
+
 }
