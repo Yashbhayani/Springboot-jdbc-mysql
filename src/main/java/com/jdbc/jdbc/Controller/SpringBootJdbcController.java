@@ -78,4 +78,13 @@ public class SpringBootJdbcController {
 
         return FileName;
     }
+
+    @GetMapping(value = "/images/{imageName}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<byte[]> showImage(@PathVariable("imageName") String imageName) throws IOException {
+        InputStream resource = userdata.getResource(path, imageName);
+    
+        byte[] imageData = StreamUtils.copyToByteArray(resource);
+    
+        return new ResponseEntity<>(imageData, HttpStatus.OK);
+    }
 }
